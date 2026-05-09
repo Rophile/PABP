@@ -36,14 +36,17 @@ class AuthService {
 
   // Google Sign In
   Future<AuthResponse?> signInWithGoogle() async {
-    // 1. Web and Desktop might need different flows, but for mobile:
-    const webClientId = 'YOUR_WEB_CLIENT_ID.apps.googleusercontent.com'; // User needs to replace
-    const iosClientId = 'YOUR_IOS_CLIENT_ID.apps.googleusercontent.com'; // User needs to replace
+    // The Web Client ID from Google Cloud Console
+    const webClientId = '925108787705-g8g17sso6i44ba2q4dv5u5nh1vlqmap7.apps.googleusercontent.com';
 
     final GoogleSignIn googleSignIn = GoogleSignIn(
-      clientId: iosClientId,
       serverClientId: webClientId,
     );
+    
+    // Clear cache to resolve potential ApiException 10 issues
+    try {
+      await googleSignIn.signOut();
+    } catch (_) {}
     
     final googleUser = await googleSignIn.signIn();
     if (googleUser == null) return null;
