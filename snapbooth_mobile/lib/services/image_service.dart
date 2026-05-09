@@ -16,17 +16,33 @@ class ImageService {
     const double stripWidth = 600.0;
     const double padding = 20.0;
     const double photoWidth = stripWidth - (padding * 2);
-    const double photoHeight = photoWidth * 0.75; // 4:3 aspect ratio for each photo
-    
+    const double photoHeight =
+        photoWidth * 0.75; // 4:3 aspect ratio for each photo
+
     final double footerHeight = 80.0;
-    final double stripHeight = (padding * (photos.length + 1)) + (photoHeight * photos.length) + footerHeight;
+    final double stripHeight =
+        (padding * (photos.length + 1)) +
+        (photoHeight * photos.length) +
+        footerHeight;
 
     final ui.PictureRecorder recorder = ui.PictureRecorder();
-    final ui.Canvas canvas = ui.Canvas(recorder, ui.Rect.fromLTWH(0, 0, stripWidth, stripHeight));
-    
+    final ui.Canvas canvas = ui.Canvas(
+      recorder,
+      ui.Rect.fromLTWH(0, 0, stripWidth, stripHeight),
+    );
+
     // Draw background
-    final Paint bgPaint = Paint()..color = template.backgroundColor;
-    canvas.drawRect(ui.Rect.fromLTWH(0, 0, stripWidth, stripHeight), bgPaint);
+    if (template.assetPath != null) {
+      final ui.Image bgImage = await _loadAssetImage(template.assetPath!);
+      _paintImage(
+        canvas,
+        bgImage,
+        ui.Rect.fromLTWH(0, 0, stripWidth, stripHeight),
+      );
+    } else {
+      final Paint bgPaint = Paint()..color = template.backgroundColor;
+      canvas.drawRect(ui.Rect.fromLTWH(0, 0, stripWidth, stripHeight), bgPaint);
+    }
 
     double currentTop = padding;
 
@@ -45,16 +61,21 @@ class ImageService {
         textAlign: TextAlign.center,
         textDirection: TextDirection.ltr,
       );
-      headerPainter.layout(width: stripWidth);
+      headerPainter.layout(minWidth: 0, maxWidth: stripWidth);
       headerPainter.paint(canvas, Offset(0, currentTop));
       currentTop += headerPainter.height + padding;
     }
 
     for (int i = 0; i < photos.length; i++) {
       final ui.Image image = await _loadUiImage(photos[i].path);
-      
-      final Rect destRect = Rect.fromLTWH(padding, currentTop, photoWidth, photoHeight);
-      
+
+      final Rect destRect = Rect.fromLTWH(
+        padding,
+        currentTop,
+        photoWidth,
+        photoHeight,
+      );
+
       // Draw frame border
       final Paint borderPaint = Paint()
         ..color = template.accentColor.withAlpha(100)
@@ -73,11 +94,15 @@ class ImageService {
         ..color = template.accentColor.withAlpha(100)
         ..strokeWidth = 2
         ..style = PaintingStyle.stroke;
-      
+
       double dashWidth = 10, dashSpace = 5;
       double startX = 0;
       while (startX < stripWidth) {
-        canvas.drawLine(Offset(startX, currentTop), Offset(startX + dashWidth, currentTop), dashPaint);
+        canvas.drawLine(
+          Offset(startX, currentTop),
+          Offset(startX + dashWidth, currentTop),
+          dashPaint,
+        );
         startX += dashWidth + dashSpace;
       }
       currentTop += padding;
@@ -96,7 +121,10 @@ class ImageService {
         textDirection: TextDirection.ltr,
       );
       dataPainter.layout();
-      dataPainter.paint(canvas, Offset((stripWidth - dataPainter.width) / 2, currentTop));
+      dataPainter.paint(
+        canvas,
+        Offset((stripWidth - dataPainter.width) / 2, currentTop),
+      );
       currentTop += dataPainter.height + padding;
 
       // Barcode simulation
@@ -104,7 +132,10 @@ class ImageService {
       double barcodeX = padding * 2;
       for (int i = 0; i < 40; i++) {
         double w = (i % 3 == 0) ? 8.0 : 3.0;
-        canvas.drawRect(Rect.fromLTWH(barcodeX, currentTop, w, 40), barcodePaint);
+        canvas.drawRect(
+          Rect.fromLTWH(barcodeX, currentTop, w, 40),
+          barcodePaint,
+        );
         barcodeX += w + 4;
       }
     } else {
@@ -124,14 +155,22 @@ class ImageService {
       textPainter.layout();
       textPainter.paint(
         canvas,
-        Offset((stripWidth - textPainter.width) / 2, stripHeight - footerHeight + (footerHeight - textPainter.height) / 2),
+        Offset(
+          (stripWidth - textPainter.width) / 2,
+          stripHeight - footerHeight + (footerHeight - textPainter.height) / 2,
+        ),
       );
     }
 
     final ui.Picture picture = recorder.endRecording();
-    final ui.Image finalImage = await picture.toImage(stripWidth.toInt(), stripHeight.toInt());
-    final ByteData? byteData = await finalImage.toByteData(format: ui.ImageByteFormat.png);
-    
+    final ui.Image finalImage = await picture.toImage(
+      stripWidth.toInt(),
+      stripHeight.toInt(),
+    );
+    final ByteData? byteData = await finalImage.toByteData(
+      format: ui.ImageByteFormat.png,
+    );
+
     return byteData!.buffer.asUint8List();
   }
 
@@ -151,7 +190,7 @@ class ImageService {
     // Calculate source rect for center crop (aspect fill)
     double srcRectWidth = srcWidth;
     double srcRectHeight = srcHeight;
-    
+
     if (srcWidth / srcHeight > destWidth / destHeight) {
       srcRectWidth = srcHeight * (destWidth / destHeight);
     } else {
@@ -165,6 +204,11 @@ class ImageService {
       srcRectHeight,
     );
 
-    canvas.drawImageRect(image, srcRect, rect, Paint()..filterQuality = FilterQuality.high);
+    canvas.drawImageRect(
+      image,
+      srcRect,
+      rect,
+      Paint()..filterQuality = FilterQuality.high,
+    );
   }
 }

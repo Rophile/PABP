@@ -11,6 +11,7 @@ class PhotostripTemplate {
   final Color accentColor;
   final String description;
   final String category; // 'Classic', 'Aesthetic', 'Retro', 'Minimal'
+  final String? assetPath;
 
   PhotostripTemplate({
     required this.id,
@@ -21,9 +22,21 @@ class PhotostripTemplate {
     this.accentColor = const Color(0xFF741E31),
     this.description = '',
     this.category = 'Classic',
+    this.assetPath,
   });
 
-  static List<PhotostripTemplate> availableTemplates = [
+  static List<PhotostripTemplate> get availableTemplates => [
+    PhotostripTemplate(
+      id: 'theater-ticket-3',
+      name: 'Theater Ticket',
+      layout: TemplateLayout.vertical,
+      slotCount: 3,
+      backgroundColor: const Color(0xFFF5F5DC), // Creamy beige
+      accentColor: const Color(0xFF8B0000), // Dark Red
+      category: 'Special',
+      description: 'A vintage theater ticket with stub and barcode.',
+      assetPath: 'assets/templates/Frame_teater.png',
+    ),
     // CLASSIC
     PhotostripTemplate(
       id: 'classic-3',
