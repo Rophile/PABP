@@ -51,6 +51,10 @@
 	<string>SnapBooth needs camera access to take booth photos.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>SnapBooth needs microphone access if you record videos.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>SnapBooth needs access to your photo library to save photostrips.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>SnapBooth needs permission to add photos to your gallery.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
