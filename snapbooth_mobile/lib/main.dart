@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:snapbooth_mobile/providers/photobooth_provider.dart';
+import 'package:snapbooth_mobile/providers/auth_provider.dart';
 import 'package:snapbooth_mobile/screens/home_screen.dart';
+import 'package:snapbooth_mobile/screens/login_screen.dart';
 
 Future<void> main() async {
   runZonedGuarded(() async {
@@ -22,6 +24,7 @@ Future<void> main() async {
     runApp(
       MultiProvider(
         providers: [
+          ChangeNotifierProvider(create: (_) => AuthProvider()),
           ChangeNotifierProvider(create: (_) => PhotoboothProvider()),
         ],
         child: const SnapBoothApp(),
@@ -70,7 +73,22 @@ class SnapBoothApp extends StatelessWidget {
           ),
         ),
       ),
-      home: const HomeScreen(),
+      home: const AuthWrapper(),
     );
+  }
+}
+
+class AuthWrapper extends StatelessWidget {
+  const AuthWrapper({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context);
+
+    if (authProvider.isAuthenticated) {
+      return const HomeScreen();
+    } else {
+      return const LoginScreen();
+    }
   }
 }

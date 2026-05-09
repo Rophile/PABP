@@ -1,12 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:snapbooth_mobile/providers/auth_provider.dart';
 import 'package:snapbooth_mobile/screens/template_selection_screen.dart';
 import 'package:snapbooth_mobile/screens/tutorial_screen.dart';
+import 'package:snapbooth_mobile/screens/profile_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context);
+    final user = authProvider.user;
+    final metadata = user?.userMetadata ?? {};
+    final displayName = metadata['username'] ?? metadata['full_name'] ?? user?.email ?? 'Guest';
+
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -22,6 +30,19 @@ class HomeScreen extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                Align(
+                  alignment: Alignment.topRight,
+                  child: IconButton(
+                    icon: const Icon(Icons.account_circle, size: 32, color: Color(0xFF741E31)),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const ProfileScreen()),
+                      );
+                    },
+                    tooltip: 'Profile',
+                  ),
+                ),
                 const Spacer(),
                 const Icon(
                   Icons.camera_rounded,
@@ -38,13 +59,14 @@ class HomeScreen extends StatelessWidget {
                     letterSpacing: 2,
                   ),
                 ),
-                const Text(
-                  'Capture your best moments',
-                  style: TextStyle(
+                Text(
+                  'Welcome, $displayName',
+                  style: const TextStyle(
                     fontSize: 16,
                     color: Color(0xFF741E31),
                     fontStyle: FontStyle.italic,
                   ),
+                  textAlign: TextAlign.center,
                 ),
                 const Spacer(),
                 _MenuButton(
