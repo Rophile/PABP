@@ -110,17 +110,5 @@ class PhotostripTemplate {
       category: 'Minimal',
       description: 'Sleek black background for high contrast.',
     ),
-
-    // SPECIAL THEME
-    PhotostripTemplate(
-      id: 'theater-ticket-3',
-      name: 'Theater Ticket',
-      layout: TemplateLayout.vertical,
-      slotCount: 3,
-      backgroundColor: const Color(0xFFF5F5DC), // Creamy beige
-      accentColor: const Color(0xFF8B0000), // Dark Red
-      category: 'Special',
-      description: 'A vintage theater ticket with stub and barcode.',
-    ),
   ];
 }

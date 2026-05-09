@@ -150,6 +150,14 @@ class _TemplateCard extends StatelessWidget {
                               ),
                             ),
                           ),
+                          // Template Asset Preview
+                          if (template.assetPath != null)
+                            Positioned.fill(
+                              child: Image.asset(
+                                template.assetPath!,
+                                fit: BoxFit.fill,
+                              ),
+                            ),
                           // Decorative Elements (Ribbon/Stickers simulated)
                           if (template.category == 'Aesthetic')
                             Positioned(
