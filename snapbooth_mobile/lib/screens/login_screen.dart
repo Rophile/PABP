@@ -53,24 +53,29 @@ class _LoginScreenState extends State<LoginScreen> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      body: Center(
+      body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
+          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 40.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               // Logo or App Name
               const Icon(Icons.camera_enhance, size: 80, color: Color(0xFF741E31)),
               const SizedBox(height: 16),
               const Text(
                 'SnapBooth',
+                textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 32,
                   fontWeight: FontWeight.bold,
                   color: Color(0xFF420D19),
                 ),
               ),
-              const Text('Capture moments, create memories'),
+              const Text(
+                'Capture moments, create memories',
+                textAlign: TextAlign.center,
+              ),
               const SizedBox(height: 48),
 
               Form(
@@ -112,15 +117,18 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
 
-              const SizedBox(height: 16),
+              const SizedBox(height: 24),
               const Row(
                 children: [
                   Expanded(child: Divider()),
-                  Padding(padding: EdgeInsets.symmetric(horizontal: 16), child: Text('OR')),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    child: Text('OR', style: TextStyle(color: Colors.grey)),
+                  ),
                   Expanded(child: Divider()),
                 ],
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 24),
 
               // Google Sign In
               SizedBox(
@@ -131,8 +139,16 @@ class _LoginScreenState extends State<LoginScreen> {
                   icon: Image.network(
                     'https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png',
                     height: 24,
+                    width: 24,
+                    errorBuilder: (context, error, stackTrace) => const Icon(Icons.login),
                   ),
-                  label: const Text('Continue with Google', style: TextStyle(fontSize: 16)),
+                  label: const Flexible(
+                    child: Text(
+                      'Continue with Google',
+                      style: TextStyle(fontSize: 16),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
                   style: OutlinedButton.styleFrom(
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     side: const BorderSide(color: Colors.grey),
@@ -141,8 +157,9 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
 
               const SizedBox(height: 32),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+              Wrap(
+                alignment: WrapAlignment.center,
+                crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
                   const Text("Don't have an account? "),
                   TextButton(

@@ -58,15 +58,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
         foregroundColor: const Color(0xFF741E31),
         elevation: 0,
       ),
-      body: Center(
+      body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
+          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const Icon(Icons.person_add_outlined, size: 64, color: Color(0xFF741E31)),
               const SizedBox(height: 16),
               const Text(
                 'Join SnapBooth',
+                textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
@@ -122,6 +124,53 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         child: authProvider.isLoading
                             ? const CircularProgressIndicator(color: Colors.white)
                             : const Text('Register', style: TextStyle(fontSize: 18)),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    const Row(
+                      children: [
+                        Expanded(child: Divider()),
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 16),
+                          child: Text('OR', style: TextStyle(color: Colors.grey)),
+                        ),
+                        Expanded(child: Divider()),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 56,
+                      child: OutlinedButton.icon(
+                        onPressed: authProvider.isLoading
+                            ? null
+                            : () async {
+                                await authProvider.signInWithGoogle();
+                                if (mounted && authProvider.error != null) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text(authProvider.error!)),
+                                  );
+                                } else if (mounted && authProvider.isAuthenticated) {
+                                  Navigator.of(context).popUntil((route) => route.isFirst);
+                                }
+                              },
+                        icon: Image.network(
+                          'https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png',
+                          height: 24,
+                          width: 24,
+                          errorBuilder: (context, error, stackTrace) => const Icon(Icons.login),
+                        ),
+                        label: const Flexible(
+                          child: Text(
+                            'Continue with Google',
+                            style: TextStyle(fontSize: 16),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        style: OutlinedButton.styleFrom(
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          side: const BorderSide(color: Colors.grey),
+                        ),
                       ),
                     ),
                   ],
