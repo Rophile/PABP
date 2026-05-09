@@ -41,6 +41,10 @@ dependencies:
   cupertino_icons: ^1.0.8
   qr_flutter: ^4.1.0
   path_provider: ^2.1.5
+  provider: ^6.1.5+1
+  image: ^4.8.0
+  gallery_saver: ^2.3.2
+  permission_handler: ^12.0.1
 
 dev_dependencies:
   flutter_test:
