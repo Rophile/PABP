@@ -27,19 +27,42 @@ class _PhotoboothScreenState extends State<PhotoboothScreen> {
   }
 
   Future<void> _initializeCamera() async {
-    final status = await Permission.camera.request();
-    if (status.isDenied) return;
+    try {
+      final status = await Permission.camera.request();
+      if (status.isDenied) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Camera permission is required')),
+          );
+        }
+        return;
+      }
 
-    _cameras = await availableCameras();
-    if (_cameras.isEmpty) return;
+      _cameras = await availableCameras();
+      if (_cameras.isEmpty) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('No cameras found on this device')),
+          );
+        }
+        return;
+      }
 
-    // Default to front camera if available
-    final frontCameraIndex = _cameras.indexWhere(
-      (cam) => cam.lensDirection == CameraLensDirection.front,
-    );
-    _selectedCameraIndex = frontCameraIndex != -1 ? frontCameraIndex : 0;
+      // Default to front camera if available
+      final frontCameraIndex = _cameras.indexWhere(
+        (cam) => cam.lensDirection == CameraLensDirection.front,
+      );
+      _selectedCameraIndex = frontCameraIndex != -1 ? frontCameraIndex : 0;
 
-    await _setupController();
+      await _setupController();
+    } catch (e) {
+      debugPrint('Camera Initialization Error: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to initialize camera: $e')),
+        );
+      }
+    }
   }
 
   Future<void> _setupController() async {

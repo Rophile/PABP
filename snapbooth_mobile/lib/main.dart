@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -5,26 +6,31 @@ import 'package:snapbooth_mobile/providers/photobooth_provider.dart';
 import 'package:snapbooth_mobile/screens/home_screen.dart';
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  runZonedGuarded(() async {
+    WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize Supabase with safety for UI-only testing
-  try {
-    await Supabase.initialize(
-      url: 'https://sdvgbmoahxkrwwwpzrsp.supabase.co',
-      anonKey: 'sb_publishable_USLNuaE5N03UhIZ-JDIrCw_zrlvAnvV',
+    // Initialize Supabase with safety for UI-only testing
+    try {
+      await Supabase.initialize(
+        url: 'https://sdvgbmoahxkrwwwpzrsp.supabase.co',
+        anonKey: 'sb_publishable_USLNuaE5N03UhIZ-JDIrCw_zrlvAnvV',
+      );
+    } catch (e) {
+      debugPrint('Supabase initialization failed: $e. App will run in UI-only mode.');
+    }
+
+    runApp(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => PhotoboothProvider()),
+        ],
+        child: const SnapBoothApp(),
+      ),
     );
-  } catch (e) {
-    debugPrint('Supabase initialization failed: $e. App will run in UI-only mode.');
-  }
-
-  runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => PhotoboothProvider()),
-      ],
-      child: const SnapBoothApp(),
-    ),
-  );
+  }, (error, stack) {
+    debugPrint('Global Error: $error');
+    debugPrint('Stack Trace: $stack');
+  });
 }
 
 class SnapBoothApp extends StatelessWidget {
