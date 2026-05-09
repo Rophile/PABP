@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'package:gallery_saver/gallery_saver.dart';
+import 'package:gal/gal.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'package:provider/provider.dart';
@@ -55,18 +55,28 @@ class _ResultScreenState extends State<ResultScreen> {
     if (_generatedImage == null) return;
 
     try {
+      final hasAccess = await Gal.hasAccess();
+      if (!hasAccess) {
+        await Gal.requestAccess();
+      }
+
       final tempDir = await getTemporaryDirectory();
       final file = File('${tempDir.path}/snapbooth_${DateTime.now().millisecondsSinceEpoch}.png');
       await file.writeAsBytes(_generatedImage!);
       
-      final success = await GallerySaver.saveImage(file.path);
+      await Gal.putImage(file.path);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(success == true ? 'Saved to gallery!' : 'Failed to save')),
+          const SnackBar(content: Text('Saved to gallery!')),
         );
       }
     } catch (e) {
       debugPrint('Error saving image: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to save image')),
+        );
+      }
     }
   }
 
