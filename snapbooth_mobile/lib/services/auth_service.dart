@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -36,34 +37,37 @@ class AuthService {
 
   // Google Sign In
   Future<AuthResponse?> signInWithGoogle() async {
-    // The Web Client ID from Google Cloud Console
-    const webClientId = '925108787705-g8g17sso6i44ba2q4dv5u5nh1vlqmap7.apps.googleusercontent.com';
+    // The Web Client ID from Google Cloud Console (used as serverClientId)
+    const webClientId = '925108787705-8ng07g0lvjo42e07rlk7rnfsa37t9lnc.apps.googleusercontent.com';
 
-    final GoogleSignIn googleSignIn = GoogleSignIn(
-      serverClientId: webClientId,
-    );
-    
-    // Clear cache to resolve potential ApiException 10 issues
     try {
+      final GoogleSignIn googleSignIn = GoogleSignIn(
+        serverClientId: webClientId,
+      );
+      
+      // Clear cache
       await googleSignIn.signOut();
-    } catch (_) {}
-    
-    final googleUser = await googleSignIn.signIn();
-    if (googleUser == null) return null;
+      
+      final googleUser = await googleSignIn.signIn();
+      if (googleUser == null) return null;
 
-    final googleAuth = await googleUser.authentication;
-    final accessToken = googleAuth.accessToken;
-    final idToken = googleAuth.idToken;
+      final googleAuth = await googleUser.authentication;
+      final accessToken = googleAuth.accessToken;
+      final idToken = googleAuth.idToken;
 
-    if (idToken == null) {
-      throw 'No ID Token found.';
+      if (idToken == null) {
+        throw 'No ID Token found.';
+      }
+
+      return await _supabase.auth.signInWithIdToken(
+        provider: OAuthProvider.google,
+        idToken: idToken,
+        accessToken: accessToken,
+      );
+    } catch (e) {
+      debugPrint('Google Sign-In Error: $e');
+      rethrow;
     }
-
-    return await _supabase.auth.signInWithIdToken(
-      provider: OAuthProvider.google,
-      idToken: idToken,
-      accessToken: accessToken,
-    );
   }
 
   // Sign Out
